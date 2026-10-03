@@ -1,0 +1,19 @@
+# Node
+node_modules/
+dist/
+*.local
+
+# Python
+backend/.venv/
+backend/__pycache__/
+*.py[cod]
+
+# Local configuration and uploaded files
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
