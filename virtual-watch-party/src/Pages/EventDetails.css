@@ -1,0 +1,281 @@
+.event-details-phone {
+    display: flex;
+    flex-direction: column;
+    min-height: 830px;
+    overflow: hidden;
+    padding-bottom: 0;
+}
+
+.event-details-header {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 32px;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 0 8px;
+}
+
+.event-details-header h1 {
+    overflow: hidden;
+    color: #eef4ff;
+    font-size: 0.96rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.event-details-back,
+.event-share-button {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    color: #edf4ff;
+    cursor: pointer;
+}
+
+.event-details-back {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.event-share-button {
+    border: 1px solid rgba(146, 177, 225, 0.28);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.event-details-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(103, 148, 222, 0.45) transparent;
+}
+
+.event-hero-poster {
+    flex: 0 0 auto;
+    aspect-ratio: 2.08 / 1;
+    overflow: hidden;
+    border: 1px solid rgba(94, 148, 222, 0.3);
+    border-radius: 11px;
+    background-color: #10233c;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.event-hero-poster.poster-inception { background-image: url("/images/inception.jpg"); }
+.event-hero-poster.poster-interstellar { background-image: url("/images/interstellar.jpg"); }
+.event-hero-poster.poster-batman { background-image: url("/images/batmanjpg.jpg"); }
+.event-hero-poster.poster-dune { background-image: url("/images/dune.jpg"); }
+
+.event-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 1px 2px;
+}
+
+.event-summary-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.event-summary-title h2 {
+    color: #f0f4ff;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.event-summary-title p {
+    margin-top: 2px;
+    color: #becce2;
+    font-size: 0.74rem;
+}
+
+.event-details-status {
+    flex: 0 0 auto;
+    padding: 4px 9px;
+    border: 1px solid rgba(78, 152, 255, 0.45);
+    border-radius: 20px;
+    background: rgba(26, 107, 218, 0.85);
+    color: #f4f8ff;
+    font-size: 0.69rem;
+    font-weight: 700;
+}
+
+.event-summary-meta {
+    display: grid;
+    gap: 4px;
+}
+
+.event-date-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.event-summary-meta p {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #d7e3f6;
+    font-size: 0.73rem;
+}
+
+.event-summary-meta p span {
+    width: 13px;
+    color: #f0f5ff;
+    text-align: center;
+}
+
+.event-host-card {
+    border: 1px solid rgba(91, 137, 199, 0.34);
+    border-radius: 10px;
+    background: linear-gradient(145deg, rgba(10, 31, 54, 0.94), rgba(7, 21, 39, 0.96));
+}
+
+.event-host-card {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 54px;
+    padding: 6px 9px;
+    color: #e7efff;
+    font-size: 0.74rem;
+}
+
+.event-host-avatar {
+    display: grid;
+    place-items: center;
+    width: 35px;
+    height: 35px;
+    border: 1px solid rgba(239, 244, 255, 0.55);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #edc49e, #975c4e 52%, #27334c);
+    color: white;
+    font-size: 0.64rem;
+    font-weight: 800;
+}
+
+.detail-chevron {
+    margin-left: auto;
+    color: #cbd9ef;
+    font-size: 1.1rem;
+}
+
+.event-participants-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 1px 2px;
+}
+
+.event-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #e6eeff;
+    list-style: none;
+    cursor: pointer;
+}
+
+.event-section-title::-webkit-details-marker {
+    display: none;
+}
+
+.event-section-title h3 {
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.event-section-title > span {
+    color: #b9c9e2;
+    font-size: 1.1rem;
+    transition: transform 150ms ease;
+}
+
+.event-participants-section[open] > .event-section-title > span {
+    transform: rotate(90deg);
+}
+
+.selected-participants-names {
+    color: #c4d2e8;
+    font-size: 0.75rem;
+    line-height: 1.45;
+}
+
+.invite-participants-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    align-self: flex-start;
+    min-height: 36px;
+    padding: 0 11px;
+    border: 1px solid rgba(93, 147, 226, 0.42);
+    border-radius: 7px;
+    background: rgba(15, 44, 75, 0.82);
+    color: #c6dcff;
+    font-size: 0.71rem;
+    cursor: pointer;
+}
+
+.event-participants-section[open] .invite-participants-button {
+    animation: event-detail-reveal 160ms ease-out;
+}
+
+@keyframes event-detail-reveal {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.event-details-feedback {
+    padding: 7px 9px;
+    border: 1px solid rgba(102, 171, 255, 0.35);
+    border-radius: 8px;
+    background: rgba(16, 54, 83, 0.6);
+    color: #c5e1ff;
+    font-size: 0.66rem;
+    line-height: 1.4;
+}
+
+.join-event-button {
+    flex: 0 0 auto;
+    min-height: 46px;
+    margin: 8px 0 14px;
+    border: 1px solid rgba(145, 161, 255, 0.35);
+    border-radius: 11px;
+    background: linear-gradient(105deg, #7048ef, #3188ff);
+    box-shadow: 0 4px 12px rgba(61, 104, 255, 0.24);
+    color: white;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.join-event-button:disabled {
+    border-color: rgba(112, 137, 176, 0.25);
+    background: linear-gradient(105deg, #35445c, #40506a);
+    box-shadow: none;
+    color: #9eacc2;
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    .event-details-phone {
+        min-height: 100vh;
+    }
+
+}

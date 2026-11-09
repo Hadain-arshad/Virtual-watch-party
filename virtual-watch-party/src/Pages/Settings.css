@@ -1,0 +1,151 @@
+.settings-phone {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.settings-header {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+    margin-top: 10px;
+    padding: 0 6px;
+}
+
+.settings-header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #edf3ff;
+    text-align: center;
+}
+
+.settings-back {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(151, 178, 255, 0.28);
+    border-radius: 50%;
+    background: rgba(16, 30, 49, 0.75);
+    color: #edf3ff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.settings-header-spacer {
+    width: 42px;
+    height: 42px;
+}
+
+.settings-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 14px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(20, 40, 62, 0.9), rgba(14, 24, 41, 0.88));
+    border: 1px solid rgba(117, 146, 255, 0.25);
+}
+
+.settings-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8b0ff, #7a8dff);
+    color: white;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.settings-name {
+    margin: 0 0 4px;
+    color: #edf3ff;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.settings-subtitle {
+    margin: 0;
+    color: #a7bddf;
+    font-size: 0.85rem;
+}
+
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.settings-item {
+    display: grid;
+    grid-template-columns: 42px 1fr 18px;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 14px;
+    border: 1px solid rgba(126, 154, 255, 0.18);
+    border-radius: 18px;
+    background: rgba(14, 26, 39, 0.86);
+    text-align: left;
+    color: #edf3ff;
+    cursor: pointer;
+}
+
+.settings-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(96, 127, 255, 0.18);
+    font-size: 1.15rem;
+}
+
+.settings-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.settings-copy strong {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.settings-copy small {
+    color: #a9bfdc;
+    font-size: 0.78rem;
+}
+
+.settings-arrow {
+    color: #dfeaff;
+    font-size: 1.5rem;
+}
+
+.settings-primary {
+    margin-top: auto;
+    height: 52px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(90deg, #5a6cff, #7b4bff, #6ca2ff);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 25px rgba(102, 96, 255, 0.24);
+}
+
+@media (max-width: 480px) {
+    .settings-header {
+        padding: 0 2px;
+    }
+
+    .settings-header h1 {
+        font-size: 1.4rem;
+    }
+}

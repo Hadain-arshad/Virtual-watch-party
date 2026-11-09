@@ -45,7 +45,7 @@ const defaultDashboard = {
     ],
 };
 
-function Dashboard({ user, onSignOut }) {
+function Dashboard({ user, onSignOut, onNotifications, onSettings, onCreateEvent, onOpenEvent, onFriends }) {
     const [data, setData] = useState(defaultDashboard);
     const [loading, setLoading] = useState(true);
 
@@ -74,6 +74,13 @@ function Dashboard({ user, onSignOut }) {
 
     const initials = (user?.full_name || "User").charAt(0).toUpperCase();
 
+    function openEventFromKeyboard(event, selectedEvent) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpenEvent(selectedEvent);
+        }
+    }
+
     return (
         <div className="dashboard-shell">
             <div className="dashboard-phone">
@@ -94,11 +101,14 @@ function Dashboard({ user, onSignOut }) {
                         <h1>Virtual<br />Watch Party</h1>
                     </div>
 
-                    <div className="user-badge secondary" aria-label="Notifications">🔔</div>
+                    <div className="header-actions">
+                        <button className="user-badge secondary" type="button" aria-label="Notifications" onClick={onNotifications}>🔔</button>
+                        <button className="user-badge secondary settings-button" type="button" aria-label="Settings" onClick={onSettings}>⚙</button>
+                    </div>
                 </header>
 
                 <div className="dashboard-toolbar">
-                    <button className="toolbar-button" type="button">
+                    <button className="toolbar-button" type="button" onClick={onCreateEvent}>
                         <span>＋ Create Event</span>
                     </button>
                 </div>
@@ -111,7 +121,7 @@ function Dashboard({ user, onSignOut }) {
 
                     <div className="event-list">
                         {(loading ? defaultDashboard.myEvents : data.myEvents).map((event) => (
-                            <article className="event-card" key={event.id}>
+                            <article className="event-card" key={event.id} role="button" tabIndex={0} aria-label={`View ${event.title} event details`} onClick={() => onOpenEvent(event)} onKeyDown={(keyboardEvent) => openEventFromKeyboard(keyboardEvent, event)}>
                                 <div className={`poster ${event.posterClass || event.poster_class || "poster-inception"}`} aria-label={`${event.title} poster`} />
 
                                 <div className="event-info">
@@ -144,7 +154,7 @@ function Dashboard({ user, onSignOut }) {
 
                     <div className="event-list">
                         {(loading ? defaultDashboard.joinedEvents : data.joinedEvents).map((event) => (
-                            <article className="event-card" key={event.id}>
+                            <article className="event-card" key={event.id} role="button" tabIndex={0} aria-label={`View ${event.title} event details`} onClick={() => onOpenEvent(event)} onKeyDown={(keyboardEvent) => openEventFromKeyboard(keyboardEvent, event)}>
                                 <div className={`poster ${event.posterClass || event.poster_class || "poster-batman"}`} aria-label={`${event.title} poster`} />
 
                                 <div className="event-info">
@@ -170,14 +180,18 @@ function Dashboard({ user, onSignOut }) {
                 </section>
 
                 <footer className="dashboard-footer">
-                    <div className="nav-item active">
+                    <button className="nav-item active" type="button" onClick={onCreateEvent}>
                         <span className="nav-icon">⌂</span>
                         <span>Events</span>
-                    </div>
-                    <div className="nav-item">
+                    </button>
+                    <button className="nav-item" type="button" aria-label="Activity log">
+                        <span className="nav-icon">▣</span>
+                        <span>Log</span>
+                    </button>
+                    <button className="nav-item" type="button" onClick={onFriends}>
                         <span className="nav-icon">◍</span>
                         <span>Friends</span>
-                    </div>
+                    </button>
                 </footer>
             </div>
         </div>
