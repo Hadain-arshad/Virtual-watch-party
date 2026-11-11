@@ -7,7 +7,7 @@ const settingsOptions = [
     { title: "Help & Support", description: "Get help and contact support", icon: "?" },
 ];
 
-function Settings({ onBack }) {
+function Settings({ onBack, onSignOut }) {
     return (
         <main className="dashboard-shell">
             <section className="dashboard-phone settings-phone" aria-label="Settings">
@@ -47,9 +47,15 @@ function Settings({ onBack }) {
                     ))}
                 </div>
 
-                <button type="button" className="settings-primary">
-                    Save Changes
-                </button>
+                <div className="settings-actions">
+                    <button type="button" className="settings-primary">
+                        Save Changes
+                    </button>
+                    <button type="button" className="settings-logout" onClick={onSignOut}>
+                        <span aria-hidden="true">↪</span>
+                        Log Out
+                    </button>
+                </div>
             </section>
         </main>
     );

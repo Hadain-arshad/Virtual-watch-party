@@ -9,6 +9,7 @@ import Settings from "./Pages/Settings";
 import Friends from "./Pages/Friends";
 import FriendDetails from "./Pages/FriendDetails";
 import MoviePlayer from "./Pages/MoviePlayer";
+import { createWatchEvent, joinWatchEvent } from "./api";
 import "./App.css";
 
 function App() {
@@ -39,16 +40,27 @@ function App() {
         setScreen("friend-details");
     }
 
+    async function createEvent(formData) {
+        const token = localStorage.getItem("watch-party-token");
+        await createWatchEvent(formData, token);
+        setScreen("dashboard");
+    }
+
+    async function joinEvent(event) {
+        const token = localStorage.getItem("watch-party-token");
+        await joinWatchEvent(event.id, token);
+    }
+
     if (screen === "dashboard" && user) {
         return <Dashboard user={user} onSignOut={signOut} onNotifications={() => setScreen("notifications")} onSettings={() => setScreen("settings")} onCreateEvent={() => setScreen("create-event")} onOpenEvent={openEventDetails} onFriends={() => setScreen("friends")} />;
     }
 
     if (screen === "notifications" && user) {
-        return <Notifications onBack={() => setScreen("dashboard")} />;
+        return <Notifications onBack={() => setScreen("dashboard")} onFriends={() => setScreen("friends")} />;
     }
 
     if (screen === "settings" && user) {
-        return <Settings onBack={() => setScreen("dashboard")} />;
+        return <Settings onBack={() => setScreen("dashboard")} onSignOut={signOut} />;
     }
 
     if (screen === "friends" && user) {
@@ -60,11 +72,11 @@ function App() {
     }
 
     if (screen === "create-event" && user) {
-        return <CreateEvent onBack={() => setScreen("dashboard")} />;
+        return <CreateEvent onBack={() => setScreen("dashboard")} onCreate={createEvent} />;
     }
 
     if (screen === "event-details" && user && selectedEvent) {
-        return <EventDetails event={selectedEvent} onBack={() => setScreen("dashboard")} onWatchMovie={() => setScreen("movie-player")} />;
+        return <EventDetails event={selectedEvent} onBack={() => setScreen("dashboard")} onJoinEvent={joinEvent} onWatchMovie={() => setScreen("movie-player")} />;
     }
 
     if (screen === "movie-player" && user) {

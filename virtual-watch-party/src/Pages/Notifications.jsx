@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getNotifications, respondFriendRequest } from "../api";
 import "./Notifications.css";
 
-const notifications = [
+const eventNotifications = [
     {
         id: 1,
         type: "Event",
@@ -41,27 +42,49 @@ const notifications = [
         participants: "3 Participants",
         poster: "poster-interstellar",
     },
-    {
-        id: 4,
-        type: "Social",
-        name: "Hassan Malik",
-        initials: "HM",
-        avatar: "hassan",
-        time: "2d ago",
-        message: "sent you a friend request",
-    },
 ];
 
-function Notifications({ onBack }) {
+function formatTime(createdAt) {
+    const elapsedMinutes = Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000);
+    if (elapsedMinutes < 1) return "Just now";
+    if (elapsedMinutes < 60) return `${elapsedMinutes}m ago`;
+    const elapsedHours = Math.floor(elapsedMinutes / 60);
+    if (elapsedHours < 24) return `${elapsedHours}h ago`;
+    return `${Math.floor(elapsedHours / 24)}d ago`;
+}
+
+function Notifications({ onBack, onFriends }) {
     const [activeFilter, setActiveFilter] = useState("All");
     const [responses, setResponses] = useState({});
+    const [friendNotifications, setFriendNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    const visibleNotifications = notifications.filter((notification) => (
+    useEffect(() => {
+        const token = localStorage.getItem("watch-party-token");
+        getNotifications(token)
+            .then((data) => setFriendNotifications(data.notifications || []))
+            .catch((requestError) => setError(requestError.message))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const visibleNotifications = [...friendNotifications, ...eventNotifications].filter((notification) => (
         activeFilter === "All" || notification.type === activeFilter
     ));
 
-    function respond(id, response) {
-        setResponses((current) => ({ ...current, [id]: response }));
+    async function respond(notification, response) {
+        if (notification.type === "Social") {
+            setError("");
+            try {
+                const action = response === "Friend request accepted" ? "accept" : "decline";
+                const token = localStorage.getItem("watch-party-token");
+                await respondFriendRequest(notification.request_id, action, token);
+            } catch (requestError) {
+                setError(requestError.message);
+                return;
+            }
+        }
+        setResponses((current) => ({ ...current, [notification.id]: response }));
     }
 
     return (
@@ -97,6 +120,8 @@ function Notifications({ onBack }) {
                 </div>
 
                 <div className="notifications-list">
+                    {error && <p className="invitation-response" role="alert">{error}</p>}
+                    {loading && activeFilter !== "Event" && <p className="invitation-response">Loading notifications...</p>}
                     {visibleNotifications.map((notification) => (
                         <article className="notification-item" key={notification.id}>
                             <div className={`notification-avatar avatar-${notification.avatar}`} aria-hidden="true">
@@ -105,7 +130,7 @@ function Notifications({ onBack }) {
                             <div className="notification-content">
                                 <div className="notification-copy">
                                     <p><strong>{notification.name}</strong> {notification.message}</p>
-                                    <time>{notification.time}</time>
+                                    <time>{notification.created_at ? formatTime(notification.created_at) : notification.time}</time>
                                 </div>
 
                                 {notification.type === "Event" && (
@@ -119,8 +144,8 @@ function Notifications({ onBack }) {
                                                 <p className="invitation-response" role="status">{responses[notification.id]}</p>
                                             ) : (
                                                 <div className="invitation-actions">
-                                                    <button type="button" className="reject-button" onClick={() => respond(notification.id, "Invitation declined")}>Reject</button>
-                                                    <button type="button" className="accept-button" onClick={() => respond(notification.id, "Invitation accepted")}>Accept</button>
+                                                    <button type="button" className="reject-button" onClick={() => respond(notification, "Invitation declined")}>Reject</button>
+                                                    <button type="button" className="accept-button" onClick={() => respond(notification, "Invitation accepted")}>Accept</button>
                                                 </div>
                                             )}
                                         </div>
@@ -129,14 +154,12 @@ function Notifications({ onBack }) {
 
                                 {notification.type === "Social" && (
                                     <div className="social-actions">
-                                        {responses[notification.id] ? (
-                                            <p className="invitation-response" role="status">{responses[notification.id]}</p>
-                                        ) : (
+                                        {notification.kind === "friend_request" && notification.request_status === "pending" && !responses[notification.id] ? (
                                             <>
-                                                <button type="button" className="reject-button" onClick={() => respond(notification.id, "Request declined")}>Ignore</button>
-                                                <button type="button" className="accept-button" onClick={() => respond(notification.id, "Friend request accepted")}>Accept</button>
+                                                <button type="button" className="reject-button" onClick={() => respond(notification, "Request declined")}>Ignore</button>
+                                                <button type="button" className="accept-button" onClick={() => respond(notification, "Friend request accepted")}>Accept</button>
                                             </>
-                                        )}
+                                        ) : <p className="invitation-response" role="status">{responses[notification.id] || (notification.kind === "friend_request_accepted" || notification.request_status === "accepted" ? "Friend request accepted" : "Request declined")}</p>}
                                     </div>
                                 )}
                             </div>
@@ -153,7 +176,7 @@ function Notifications({ onBack }) {
                         <span className="notification-nav-icon">♧</span>
                         Logs
                     </button>
-                    <button type="button">
+                    <button type="button" onClick={onFriends}>
                         <span className="notification-nav-icon">♙</span>
                         Friends
                     </button>

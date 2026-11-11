@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import "./MoviePlayer.css";
 
 const participants = [
@@ -19,6 +20,44 @@ function MoviePlayer({ event, onBack }) {
     const title = event?.title || "Watch Party";
     const posterClass = event?.posterClass || event?.poster_class;
     const posterImage = event?.posterUrl || event?.poster_url || posterImages[posterClass];
+    const videoUrl = event?.videoUrl || event?.video_url || "";
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [playbackRate, setPlaybackRate] = useState("1");
+    const [videoError, setVideoError] = useState("");
+    const videoRef = useRef(null);
+
+    function formatTime(seconds) {
+        if (!Number.isFinite(seconds)) return "0:00";
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, "0");
+        return `${minutes}:${remainingSeconds}`;
+    }
+
+    function togglePlayback() {
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (video.paused) {
+            video.play().catch(() => setVideoError("This video could not be played by your browser."));
+        } else {
+            video.pause();
+        }
+    }
+
+    function seekVideo(event) {
+        const nextTime = Number(event.target.value);
+        if (videoRef.current) videoRef.current.currentTime = nextTime;
+        setCurrentTime(nextTime);
+    }
+
+    function changePlaybackRate(event) {
+        const nextRate = event.target.value;
+        setPlaybackRate(nextRate);
+        if (videoRef.current) videoRef.current.playbackRate = Number(nextRate);
+    }
 
     return (
         <main className="dashboard-shell movie-shell">
@@ -41,28 +80,70 @@ function MoviePlayer({ event, onBack }) {
                     <section className="movie-main" aria-label="Movie playback">
                         <div
                             className="movie-video-panel"
-                            role="img"
-                            aria-label={`${title} movie preview`}
+                            aria-label={`${title} movie player`}
                             style={posterImage ? { backgroundImage: `url("${posterImage}")` } : undefined}
                         >
-                            <div className="video-overlay" />
-                            <button type="button" aria-label="Play" className="control-button play-button">▶</button>
+                            {videoUrl ? (
+                                <video
+                                    ref={videoRef}
+                                    className="movie-video"
+                                    src={videoUrl}
+                                    preload="metadata"
+                                    playsInline
+                                    muted={isMuted}
+                                    onLoadedMetadata={(videoEvent) => {
+                                        setDuration(videoEvent.currentTarget.duration);
+                                        videoEvent.currentTarget.playbackRate = Number(playbackRate);
+                                    }}
+                                    onTimeUpdate={(videoEvent) => setCurrentTime(videoEvent.currentTarget.currentTime)}
+                                    onPlay={() => setIsPlaying(true)}
+                                    onPause={() => setIsPlaying(false)}
+                                    onEnded={() => setIsPlaying(false)}
+                                    onError={() => setVideoError("This video format is not supported by your browser.")}
+                                />
+                            ) : (
+                                <div className="video-empty-state">
+                                    <span>This event has no video attached. Create an event and select a video to test playback.</span>
+                                </div>
+                            )}
                         </div>
+                        {videoError && <p className="movie-video-error" role="alert">{videoError}</p>}
 
                         <div className="movie-progress-row">
-                            <span>42:16</span>
-                            <div className="scrubber-track" aria-hidden="true">
-                                <div className="scrubber-fill" />
-                                <div className="scrubber-knob" />
-                            </div>
-                            <span>2:28:16</span>
+                            <span>{formatTime(currentTime)}</span>
+                            <input
+                                className="movie-seek"
+                                type="range"
+                                min="0"
+                                max={duration || 0}
+                                step="0.1"
+                                value={Math.min(currentTime, duration || 0)}
+                                onChange={seekVideo}
+                                disabled={!videoUrl || !duration}
+                                aria-label="Seek through movie"
+                                style={{ "--seek-progress": `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                            />
+                            <span>{formatTime(duration)}</span>
                         </div>
 
                         <div className="movie-controls">
-                            <button type="button" aria-label="Rewind" className="control-button small">⏮</button>
-                            <button type="button" aria-label="Volume" className="control-button small">🔊</button>
-                            <button type="button" aria-label="Settings" className="control-button small">⚙</button>
-                            <button type="button" aria-label="Comments" className="control-button small">◌</button>
+                            <button type="button" aria-label={isPlaying ? "Pause" : "Play"} className="control-button small playback-toggle" onClick={togglePlayback} disabled={!videoUrl}>
+                                {isPlaying ? "Ⅱ" : "▶"}
+                            </button>
+                            <button type="button" aria-label={isMuted ? "Unmute" : "Mute"} className="control-button small" onClick={() => setIsMuted((muted) => !muted)} disabled={!videoUrl}>
+                                {isMuted ? "◌" : "◖"}
+                            </button>
+                            <label className="playback-speed-control">
+                                <span>Speed</span>
+                                <select value={playbackRate} onChange={changePlaybackRate} disabled={!videoUrl} aria-label="Playback speed">
+                                    <option value="0.5">0.5x</option>
+                                    <option value="0.75">0.75x</option>
+                                    <option value="1">1x</option>
+                                    <option value="1.25">1.25x</option>
+                                    <option value="1.5">1.5x</option>
+                                    <option value="2">2x</option>
+                                </select>
+                            </label>
                         </div>
                     </section>
 

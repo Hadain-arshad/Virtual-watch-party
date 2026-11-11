@@ -3,12 +3,14 @@ import FriendPickerDialog from "../components/FriendPickerDialog";
 import { friends } from "../components/friends";
 import "./CreateEvent.css";
 
-function CreateEvent({ onBack }) {
+function CreateEvent({ onBack, onCreate }) {
     const [poster, setPoster] = useState(null);
     const [posterPreview, setPosterPreview] = useState("");
+    const [movieFile, setMovieFile] = useState(null);
     const [selectedFriends, setSelectedFriends] = useState([]);
     const [showFriends, setShowFriends] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
 
     function handlePosterChange(event) {
         const file = event.target.files?.[0];
@@ -24,9 +26,25 @@ function CreateEvent({ onBack }) {
         reader.readAsDataURL(file);
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
-        setSubmitted(true);
+        const formData = new FormData(event.currentTarget);
+        const eventDate = new Date(`${formData.get("date")}T${formData.get("time")}`);
+        const eventData = new FormData();
+        eventData.append("title", String(formData.get("eventName")).trim());
+        eventData.append("scheduled_at", eventDate.toISOString());
+        eventData.append("description", String(formData.get("description") || "").trim());
+        eventData.append("movie", formData.get("movie"));
+        if (poster) eventData.append("poster", poster);
+
+        setSaving(true);
+        setError("");
+        try {
+            await onCreate(eventData);
+        } catch (requestError) {
+            setError(requestError.message || "Could not create the event.");
+            setSaving(false);
+        }
     }
 
     return (
@@ -68,9 +86,9 @@ function CreateEvent({ onBack }) {
                         <span>Select Movie</span>
                         <span className="file-picker">
                             <span className="field-icon" aria-hidden="true">▣</span>
-                            <span className="file-picker-text">Choose from device</span>
+                            <span className="file-picker-text">{movieFile?.name || "Choose video from device"}</span>
                             <span className="field-chevron" aria-hidden="true">›</span>
-                            <input name="movie" type="file" accept="video/*" required />
+                            <input name="movie" type="file" accept="video/*" required onChange={(inputEvent) => setMovieFile(inputEvent.target.files?.[0] || null)} />
                         </span>
                     </label>
 
@@ -107,11 +125,10 @@ function CreateEvent({ onBack }) {
                         <textarea name="description" placeholder="Add a short description..." rows="2" />
                     </label>
 
-                    {submitted && <p className="create-event-status" role="status">Your event details are ready. Event creation is not connected to the server yet.</p>}
-
+                    {error && <p role="alert">{error}</p>}
                     <div className="create-event-actions">
                         <button className="cancel-event-button" type="button" onClick={onBack}>Cancel</button>
-                        <button className="submit-event-button" type="submit">Create Event</button>
+                        <button className="submit-event-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Create Event"}</button>
                     </div>
                 </form>
 

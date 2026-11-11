@@ -36,19 +36,19 @@ function FriendDetails({ friend, onBack }) {
                     <div className="friend-profile-header">
                         <div>
                             <h2>{friend.name}</h2>
-                            <p className="friend-online-status">● Online</p>
+                            <p className="friend-online-status">● {friend.status || "Friend"}</p>
                         </div>
                     </div>
 
                     <div className="friend-action-row">
                         <button type="button" className="primary-action">Send Message</button>
-                        <button type="button" className="secondary-action">Add Friend</button>
+                        <button type="button" className="secondary-action" disabled>Friends</button>
                     </div>
 
                     <div className="friend-info-list">
                         <div className="info-row"><span className="info-label">Email</span><span>{friend.email}</span></div>
                         <div className="info-row"><span className="info-label">Gender</span><span>{friend.gender}</span></div>
-                        <div className="info-row"><span className="info-label">Location</span><span>{friend.location}</span></div>
+                        <div className="info-row"><span className="info-label">Location</span><span>{friend.location || "Not specified"}</span></div>
                         <div className="info-row"><span className="info-label">Joined</span><span>{friend.joined}</span></div>
                     </div>
 

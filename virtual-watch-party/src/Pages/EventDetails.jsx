@@ -3,13 +3,27 @@ import FriendPickerDialog from "../components/FriendPickerDialog";
 import { friends } from "../components/friends";
 import "./EventDetails.css";
 
-function EventDetails({ event, onBack, onWatchMovie }) {
+function EventDetails({ event, onBack, onJoinEvent, onWatchMovie }) {
     const [joinMessage, setJoinMessage] = useState("");
+    const [isJoining, setIsJoining] = useState(false);
     const [shareMessage, setShareMessage] = useState("");
     const [selectedFriends, setSelectedFriends] = useState([]);
     const [showFriends, setShowFriends] = useState(false);
-    const posterClass = event.posterClass || event.poster_class || "poster-inception";
+    const posterClass = event.posterClass || event.poster_class || "";
     const participantCount = Number.parseInt(event.participants || "", 10) || 0;
+
+    async function handleJoinEvent() {
+        setIsJoining(true);
+        setJoinMessage("");
+        try {
+            await onJoinEvent(event);
+            onWatchMovie?.();
+        } catch (error) {
+            setJoinMessage(error.message || "Could not join this event.");
+        } finally {
+            setIsJoining(false);
+        }
+    }
 
     async function shareEvent() {
         const shareData = {
@@ -54,7 +68,7 @@ function EventDetails({ event, onBack, onWatchMovie }) {
                 </header>
 
                 <div className="event-details-content">
-                    <div className={`event-hero-poster ${posterClass}`} role="img" aria-label={`${event.title} movie poster`} />
+                    <div className={`event-hero-poster ${posterClass}`} style={event.posterUrl ? { backgroundImage: `url("${event.posterUrl}")` } : undefined} role="img" aria-label={`${event.title} movie poster`} />
 
                     <section className="event-summary">
                         <div className="event-summary-title">
@@ -101,15 +115,10 @@ function EventDetails({ event, onBack, onWatchMovie }) {
                 <button
                     className="join-event-button"
                     type="button"
-                    onClick={() => {
-                        if (onWatchMovie) {
-                            onWatchMovie();
-                            return;
-                        }
-                        setJoinMessage("Joining events is not connected to the server yet.");
-                    }}
+                    onClick={handleJoinEvent}
+                    disabled={isJoining}
                 >
-                    Join Event
+                    {isJoining ? "Joining..." : "Join Event"}
                 </button>
 
                 {showFriends && (
